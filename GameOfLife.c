@@ -1,4 +1,4 @@
-#include"GameofLife.h"
+#include"GameOfLife.h"
 
 board*creat(int i,int j){
 	if(i<=0||j<=0)
@@ -13,7 +13,7 @@ board*creat(int i,int j){
 		return 0;
 	}
 	b->width=i;
-	b->height=h;
+	b->height=j;
 	return b;
 }
 
@@ -39,12 +39,12 @@ void generate(board*now,board*next){
 		for(j=0;j<next->height;j++){
 			num=check(next,i,j);
 			if((next->box)[i+j*next->width]==1&&num<2)
-				(now->box)[i+j*next->width]==0;
-			else if((next->box)[i+j*next->width]==1&&count>3)
 				(now->box)[i+j*next->width]=0;
-			else if((next->box)[i+j*next->width]==1&&count<=3)
+			else if((next->box)[i+j*next->width]==1&&num>3)
+				(now->box)[i+j*next->width]=0;
+			else if((next->box)[i+j*next->width]==1&&num<=3)
 				(now->box)[i+j*next->width]=1;
-			else if((next->box)[i+j*next->width]==0&&count==3)
+			else if((next->box)[i+j*next->width]==0&&num==3)
 				(now->box)[i+j*next->width]=1;
 		}
 	}
