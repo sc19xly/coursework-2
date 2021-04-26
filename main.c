@@ -1,27 +1,25 @@
 #include"GameOfLife.h"
-
-#include<SDL2/SDL.h>
-#include<SDL2/SDL_opengl.h>
-#include<stdio.h>
-#include<stdlib.h>
-
-#define WIDTH 400
-#define HEIGHT 400
-#define CELLSIZE 5
-#define DTIME 1.0/10.0
-
-board*next=NULL;
-board*now=NULL;
-int lastTime=0;
-int newTime=0;
-double deltaTime=0.0;
-
-void init();
-void shutdown();
-void display();
+#include"main.h"
 
 //return 0 if it runs successfully otherwise return 1
-int main(int argc,char** argv){
+int main(){
+	int times,i,flag,initial;
+	printf("Choose your initial state:\n1.saved state\n2.last time state\n");
+	scanf("%d",&initial);
+	if(initial==2){
+	load();
+	}
+	printf("Choose your mode:(1.selfdefine 2.autoplay\n)");
+	scanf("%i",&flag);
+	if(initial==1){
+	printf("Enter the WIDTH:");
+	scanf("%d",&WIDTH);
+	printf("Enter the HEIGHT:");
+	scanf("%d",&HEIGHT);}
+	if(flag==1){
+	printf("Enter the times you want:");
+	scanf("%d",&times);
+	}
 	SDL_Window *window;
 	SDL_GLContext glcontext;
 	SDL_Event e;
@@ -43,21 +41,91 @@ int main(int argc,char** argv){
 		return 1;
 	}
 	glcontext=SDL_GL_CreateContext(window);
+	if(initial==1)
 	init();
-	while(e.type!=SDL_QUIT){
+	if(initial==2){
+	int b_width = WIDTH/CELLSIZE;
+        int b_height = HEIGHT/CELLSIZE;
+        glClearColor(0.0,0.0,0.0,0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0,WIDTH,HEIGHT,0,-1,1);
+        glMatrixMode(GL_MODELVIEW);
+        now=creat(b_width,b_height);
+	int a,b,v;
+	FILE*f;
+	f=fopen("store.txt","r");
+	for(a=0;a<b_width;a++){
+		for(b=0;b<b_height;b++){
+			fscanf(f,"%d,",&v);
+			if(v==1)
+			(now->box)[b+a*b_width]=v;
+		}
+	}
+	fclose(f);
+	next=creat(b_width,b_height);
+	}
+	if(flag==1){
+	i=0;
+	while(i<times&&e.type!=SDL_QUIT){
 		SDL_PollEvent(&e);
 		newTime=SDL_GetTicks();
-		deltaTime=(double)(newTime-lastTime)/1000;
-		if(deltaTime>=DTIME){
-			generate(now,next);
-			lastTime=newTime;
+        	deltaTime=(double)(newTime-lastTime)/10;
+        	if(deltaTime>=DTIME){
+                        generate(now,next);
+                        lastTime=newTime;
+				i++;
+                }
+                display();
+                SDL_GL_SwapWindow(window);
+		if(e.type==SDL_KEYDOWN||e.type==SDL_QUIT)
+		{
+			output();
+			break;
 		}
-		display();
-		SDL_GL_SwapWindow(window);
+	}
+	}
+	if(flag==2){
+	newTime=SDL_GetTicks();
+        deltaTime=(double)(newTime-lastTime)/10;
+        if(deltaTime>=DTIME){
+                generate(now,next);
+                lastTime=newTime;
+        }
+        display();
+        SDL_GL_SwapWindow(window);
+	while (e.type!=SDL_QUIT){
+	SDL_PollEvent(&e);
+	if(e.type== SDL_KEYDOWN){
+		if(e.key.keysym.sym==SDLK_e)
+		{
+			output();
+			break;
+		}
+		if(e.key.keysym.sym==SDLK_p)
+		{
+			sleep(3);
+		}
+	}
+		newTime=SDL_GetTicks();
+                deltaTime=(double)(newTime-lastTime)/10;
+                if(deltaTime>=DTIME){
+                        generate(now,next);
+                        lastTime=newTime;
+		}
+                display();
+                SDL_GL_SwapWindow(window);
+		if(e.type==SDL_QUIT){
+			output();
+			break;
+		}
+	}
 	}
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+	output();
 	return 0;
 }
 
@@ -71,7 +139,14 @@ void init(){
 	glOrtho(0,WIDTH,HEIGHT,0,-1,1);
 	glMatrixMode(GL_MODELVIEW);
 	now=creat(b_width,b_height);
-	(now->box)[1+5*b_width]=1;
+	(now->box)[10+1*b_width] = 1;
+      (now->box)[10+2*b_width] = 1;
+      (now->box)[10+3*b_width] = 1;
+
+        (now->box)[10+20*b_width] = 1;
+        (now->box)[11+20*b_width] = 1;
+        (now->box)[12+20*b_width] = 1;
+	/*(now->box)[1+5*b_width]=1;
 	(now->box)[2+5*b_width]=1;
 	(now->box)[1+6*b_width]=1;
 	(now->box)[2+6*b_width]=1;
@@ -108,7 +183,7 @@ void init(){
    	(now->box)[25+2*b_width] = 1;
    	(now->box)[25+6*b_width] = 1;
    	(now->box)[25+1*b_width] = 1;
-   	(now->box)[25+7*b_width] = 1;
+   	(now->box)[25+7*b_width] = 1;*/
 	next=creat(b_width,b_height);
 }
 
@@ -134,5 +209,41 @@ void display(){
 	}
 }
 
-void shutdown(){
+void output(){
+	int x,y;
+	x=WIDTH/CELLSIZE;
+	y=HEIGHT/CELLSIZE;
+	FILE*fop;
+	fop=fopen("store.txt","w");
+	int i,j;
+	for(i=0;i<x;i++){
+		for(j=0;j<y;j++){
+			fprintf(fop,"%d,",(now->box)[j+i*x]);
+		}
+	}
+	fclose(fop);
+	FILE*fp;
+        fp=fopen("storesize.txt","w");
+        fprintf(fp,"%d,",WIDTH);
+        fprintf(fp,"%d",HEIGHT);
+        fclose(fp);
 }
+
+
+void load(){
+	FILE*fp;
+	fp=fopen("storesize.txt","r");
+	int value,num=0;  
+	while( !feof(fp) )
+	{
+		fscanf(fp,"%d,",&value);
+		if(num==0)
+		{
+			WIDTH=value;
+		}
+		if(num==1)
+			HEIGHT=value;
+		num++;
+	}
+	fclose(fp);
+	}
