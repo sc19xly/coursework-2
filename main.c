@@ -3,19 +3,89 @@
 
 //return 0 if it runs successfully otherwise return 1
 int main(){
-	int times,i,flag,initial;
-	printf("Choose your initial state:\n1.saved state\n2.last time state\n");
+	int times,i,flag,initial,wch,fch;
+	printf("Choose your initial state:\n1.saved state\n2.last time state\n3.selfdefine whole world\n");
 	scanf("%d",&initial);
+	if(initial==3){
+		printf("Enter the width:\n");
+		scanf("%d",&WIDTH);
+		printf("Enter the height:\n");
+		scanf("%d",&HEIGHT);
+	}
 	if(initial==2){
 	load();
+	if(WIDTH<=0||HEIGHT<=0)
+	{
+		printf("Invalid input\n");
+		return 1;
 	}
-	printf("Choose your mode:(1.selfdefine 2.autoplay\n)");
-	scanf("%i",&flag);
+	}
 	if(initial==1){
-	printf("Enter the WIDTH:");
-	scanf("%d",&WIDTH);
-	printf("Enter the HEIGHT:");
-	scanf("%d",&HEIGHT);}
+		printf("Enter the width and height you want:\n1.2000*2000\n2.1000*1000\n3.500*500\n");
+		scanf("%d",&wch);
+		if(wch==1)
+		{
+			WIDTH=2000;
+			HEIGHT=2000;
+		}
+		if(wch==2)
+		{
+			WIDTH=1000;
+			HEIGHT=1000;
+		}
+		if(wch==3)
+		{
+			WIDTH=500;
+			HEIGHT=500;
+		}
+		now=creat(WIDTH,HEIGHT);
+		printf("Enter the figure you want:\n1.Blinker\n2.Toad\n3.Block\n4.Glider\n5.Gosper-glider-gun\n");
+		scanf("%d",&fch);
+		switch(fch){
+			case 1:
+				if(wch==1)
+					loadsaved("Blinker2k*2k.txt");
+				if(wch==2)
+					loadsaved("Blinker1k*1k.txt");
+				if(wch==3)
+					loadsaved("Blinker500*500.txt");
+				break;
+			case 2:
+				if(wch==1)
+					loadsaved("Toad2k*2k.txt");
+				if(wch==2)
+					loadsaved("Toad1k*1k.txt");
+				if(wch==3)
+					loadsaved("Toad500*500.txt");
+				break;
+			case 3:
+				if(wch==1)
+					loadsaved("Block2k*2k.txt");
+				if(wch==2)
+					loadsaved("Block1k*1k.txt");
+				if(wch==3)
+					loadsaved("Block500*500.txt");
+				break;
+			case 4:
+				if(wch==1)
+					loadsaved("Glider2k*2k.txt");
+				if(wch==2)
+					loadsaved("Glider1k*1k.txt");
+				if(wch==3)
+					loadsaved("Glider500*500.txt");
+				break;
+			case 5:
+				if(wch==1)
+					loadsaved("Gosper-glider-gun2k*2k.txt");
+				if(wch==2)
+					loadsaved("Gosper-glider-gun1k*1k.txt");
+				if(wch==3)
+					loadsaved("Gosper-glider-gun500*500.txt");
+				break;
+	}
+}
+	printf("Choose your mode:(1.selfdefine 2.autoplay)\n");
+	scanf("%i",&flag);
 	if(flag==1){
 	printf("Enter the times you want:");
 	scanf("%d",&times);
@@ -41,8 +111,42 @@ int main(){
 		return 1;
 	}
 	glcontext=SDL_GL_CreateContext(window);
-	if(initial==1)
+	if(initial==1||initial==3){
+	if(initial==3)
+	now=creat(WIDTH/CELLSIZE,HEIGHT/CELLSIZE);
 	init();
+	while(initial==3){
+		int x,y,mouseX,mouseY;
+	SDL_PollEvent(&e);
+	if(e.type==SDL_MOUSEMOTION){
+	SDL_PollEvent(&e);
+	SDL_GetMouseState(&mouseX,&mouseY);
+	if(e.button.button==SDL_BUTTON_LEFT){
+		SDL_PollEvent(&e);
+		x=mouseX/CELLSIZE;y=mouseY/CELLSIZE;
+		(now->box)[x+y*WIDTH/CELLSIZE]=1;
+		display();
+		SDL_GL_SwapWindow(window);
+		}
+		}
+		if(e.type== SDL_KEYDOWN){
+		if(e.key.keysym.sym==SDLK_e)
+			break;
+		}
+		if(e.type==SDL_QUIT){
+			output();
+			return 0;
+		}
+	if(e.type==SDL_MOUSEBUTTONDOWN){
+	SDL_GetMouseState(&mouseX,&mouseY);
+	SDL_PollEvent(&e);
+		x=mouseX/CELLSIZE;y=mouseY/CELLSIZE;
+		(now->box)[x+y*WIDTH/CELLSIZE]=1;
+		display();
+		SDL_GL_SwapWindow(window);
+	}
+	}
+	}
 	if(initial==2){
 	int b_width = WIDTH/CELLSIZE;
         int b_height = HEIGHT/CELLSIZE;
@@ -52,18 +156,7 @@ int main(){
         glLoadIdentity();
         glOrtho(0,WIDTH,HEIGHT,0,-1,1);
         glMatrixMode(GL_MODELVIEW);
-        now=creat(b_width,b_height);
-	int a,b,v;
-	FILE*f;
-	f=fopen("store.txt","r");
-	for(a=0;a<b_width;a++){
-		for(b=0;b<b_height;b++){
-			fscanf(f,"%d,",&v);
-			if(v==1)
-			(now->box)[b+a*b_width]=v;
-		}
-	}
-	fclose(f);
+		
 	next=creat(b_width,b_height);
 	}
 	if(flag==1){
@@ -79,11 +172,38 @@ int main(){
                 }
                 display();
                 SDL_GL_SwapWindow(window);
-		if(e.type==SDL_KEYDOWN||e.type==SDL_QUIT)
+		if(e.type==SDL_QUIT)
 		{
 			output();
 			break;
 		}
+		if(e.type== SDL_KEYDOWN){
+		if(e.key.keysym.sym==SDLK_e)
+		{
+			output();
+			break;
+		}
+		if(e.key.keysym.sym==SDLK_p)
+		{
+			while(1){
+			SDL_PollEvent(&e);
+			if(e.type==SDL_KEYDOWN){
+				if(e.key.keysym.sym==SDLK_e){
+					output();
+					return 0;
+				}
+				if(e.key.keysym.sym==SDLK_p)
+					break;
+				else
+					display();
+			}
+			if(e.type==SDL_QUIT){
+				output();
+				return 0;
+			}
+		}
+		}
+	}
 	}
 	}
 	if(flag==2){
@@ -105,7 +225,23 @@ int main(){
 		}
 		if(e.key.keysym.sym==SDLK_p)
 		{
-			sleep(3);
+			while(1){
+			SDL_PollEvent(&e);
+			if(e.type==SDL_KEYDOWN){
+				if(e.key.keysym.sym==SDLK_e){
+					output();
+					return 0;
+				}
+				if(e.key.keysym.sym==SDLK_p)
+					break;
+				else
+					display();
+			}
+			if(e.type==SDL_QUIT){
+				output();
+				return 0;
+			}
+		}
 		}
 	}
 		newTime=SDL_GetTicks();
@@ -129,121 +265,5 @@ int main(){
 	return 0;
 }
 
-void init(){
-	int b_width = WIDTH/CELLSIZE;
-	int b_height = HEIGHT/CELLSIZE;
-	glClearColor(0.0,0.0,0.0,0.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0,WIDTH,HEIGHT,0,-1,1);
-	glMatrixMode(GL_MODELVIEW);
-	now=creat(b_width,b_height);
-	(now->box)[10+1*b_width] = 1;
-      (now->box)[10+2*b_width] = 1;
-      (now->box)[10+3*b_width] = 1;
-
-        (now->box)[10+20*b_width] = 1;
-        (now->box)[11+20*b_width] = 1;
-        (now->box)[12+20*b_width] = 1;
-	/*(now->box)[1+5*b_width]=1;
-	(now->box)[2+5*b_width]=1;
-	(now->box)[1+6*b_width]=1;
-	(now->box)[2+6*b_width]=1;
-	(now->box)[35+3*b_width] = 1;
-	(now->box)[36+3*b_width] = 1;
-	(now->box)[35+4*b_width] = 1;
-	(now->box)[36+4*b_width] = 1;
-
-	(now->box)[13+3*b_width] = 1;
-	(now->box)[14+3*b_width] = 1;
-	(now->box)[12+4*b_width] = 1;
-	(now->box)[16+4*b_width] = 1;
-	(now->box)[11+5*b_width] = 1;
-	(now->box)[17+5*b_width] = 1;
-	(now->box)[11+6*b_width] = 1;
-	(now->box)[15+6*b_width] = 1;
-	(now->box)[17+6*b_width] = 1;
-	(now->box)[18+6*b_width] = 1;
-   	(now->box)[11+7*b_width] = 1;
-   	(now->box)[17+7*b_width] = 1;
-   	(now->box)[12+8*b_width] = 1;
-   	(now->box)[16+8*b_width] = 1;
-   	(now->box)[13+9*b_width] = 1;
-   	(now->box)[14+9*b_width] = 1;
-
-   	(now->box)[21+3*b_width] = 1;
-   	(now->box)[22+3*b_width] = 1;
-   	(now->box)[21+4*b_width] = 1;
-   	(now->box)[22+4*b_width] = 1;
-   	(now->box)[21+5*b_width] = 1;
-   	(now->box)[22+5*b_width] = 1;
-   	(now->box)[23+2*b_width] = 1;
-   	(now->box)[23+6*b_width] = 1;
-   	(now->box)[25+2*b_width] = 1;
-   	(now->box)[25+6*b_width] = 1;
-   	(now->box)[25+1*b_width] = 1;
-   	(now->box)[25+7*b_width] = 1;*/
-	next=creat(b_width,b_height);
-}
-
-void display(){
-	int i,j,x,y;
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	for(i=0;i<now->width;i++){
-		for(j=0;j<now->height;j++){
-			x=i*CELLSIZE;
-			y=j*CELLSIZE;
-			if((now->box)[i+j*now->width]==1)
-			{
-				glBegin(GL_QUADS);
-				glColor3f(1.0,1.0,1.0);
-				glVertex2d(x,y);
-				glVertex2d(x+CELLSIZE,y);
-				glVertex2d(x+CELLSIZE,y+CELLSIZE);
-				glVertex2d(x,y+CELLSIZE);
-				glEnd();
-			}
-		}
-	}
-}
-
-void output(){
-	int x,y;
-	x=WIDTH/CELLSIZE;
-	y=HEIGHT/CELLSIZE;
-	FILE*fop;
-	fop=fopen("store.txt","w");
-	int i,j;
-	for(i=0;i<x;i++){
-		for(j=0;j<y;j++){
-			fprintf(fop,"%d,",(now->box)[j+i*x]);
-		}
-	}
-	fclose(fop);
-	FILE*fp;
-        fp=fopen("storesize.txt","w");
-        fprintf(fp,"%d,",WIDTH);
-        fprintf(fp,"%d",HEIGHT);
-        fclose(fp);
-}
 
 
-void load(){
-	FILE*fp;
-	fp=fopen("storesize.txt","r");
-	int value,num=0;  
-	while( !feof(fp) )
-	{
-		fscanf(fp,"%d,",&value);
-		if(num==0)
-		{
-			WIDTH=value;
-		}
-		if(num==1)
-			HEIGHT=value;
-		num++;
-	}
-	fclose(fp);
-	}

@@ -13,18 +13,9 @@
 #define CELLSIZE 5
 #define DTIME 100.0
 //int WIDTH,HEIGHT;
-board*next;
-board*now;
 int lastTime;
 int newTime;
 double deltaTime;
-int WIDTH;
-int HEIGHT;
 
-void init();
-void shutdown();
-void display();
-void output();
-void load();
 
 #endif
