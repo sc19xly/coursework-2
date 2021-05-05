@@ -5,6 +5,8 @@
 //#include"main.h"
 #define	correct 1
 
+const int width=200;
+const int height=200;
 int score;
 int stage=1;
 int c;
@@ -109,7 +111,7 @@ void t_load(){
 	//int WIDTH=0;
 	//int HEIGHT=0;
 	//board*now;
-	now=creat(200,200);
+	now=creat(width,height);
 	load();
 	if(WIDTH==1000&&HEIGHT==1000)
 	{
@@ -140,9 +142,9 @@ void t_loadsaved(){
 	loadsaved("store.txt");
 	c=0;
 	int i,j,flag=0;
-	for(i=0;i<200;i++){
-                for(j=0;j<200;j++){
-                        if((now->box)[i+j*200]!=(t->box)[i+j*200])
+	for(i=0;i<width;i++){
+                for(j=0;j<height;j++){
+                        if((now->box)[i+j*width]!=(t->box)[i+j*width])
                         {        
 				flag=1;
 			//	printf("1");
