@@ -6,7 +6,7 @@ CFLAGS = -Wall
 
 LIBS = -lSDL2 -lGL
 
-SRCS = GameOfLife.c Test.c
+SRCS =  main.c GameOfLife.c Test.c
 
 TARGET = GameOfLifeTest
 
