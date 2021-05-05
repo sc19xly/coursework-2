@@ -186,17 +186,15 @@ int main(){
 	(nexta->box)[11+19*100]=1;
 	(nexta->box)[11+20*100]=1;
 	(nexta->box)[11+21*100]=1;
-	//t_creat();
 	t_generate();
-//	b=NULL;
-	t=creat(200,200);
-	(t->box)[10+1*200] = 1;
-        (t->box)[10+2*200] = 1;
-        (t->box)[10+3*200] = 1;
+	t=creat(width,height);
+	(t->box)[10+1*width] = 1;
+        (t->box)[10+2*width] = 1;
+        (t->box)[10+3*width] = 1;
 
-        (t->box)[10+20*200] = 1;
-        (t->box)[11+20*200] = 1;
-        (t->box)[12+20*200] = 1;
+        (t->box)[10+20*width] = 1;
+        (t->box)[11+20*width] = 1;
+        (t->box)[12+20*width] = 1;
 	t_load();
 	t_loadsaved();
 	t_output();
